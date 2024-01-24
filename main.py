@@ -24,13 +24,13 @@ CF_IPV4_URL = DOTENV_CONFIG.get("CF_IPV4_URL")
 CF_IPV6_URL = DOTENV_CONFIG.get("CF_IPV6_URL")
 
 # Do your service/instance support QUIC/HTTP3?
-IS_HTTP3_ENABLED = DOTENV_CONFIG.get("IS_HTTP3_ENABLED")
+IS_HTTP3_ENABLED = DOTENV_CONFIG.get("IS_HTTP3_ENABLED").lower() == "true"
 
 # Do your service/instance support IPv6?
-IS_IPV6_ENABLED = DOTENV_CONFIG.get("IS_IPV6_ENABLED")
+IS_IPV6_ENABLED = DOTENV_CONFIG.get("IS_IPV6_ENABLED").lower() == "true"
 
 # Do your service/instance support plaintext HTTP (port 80)?
-IS_HTTP_ENABLED = DOTENV_CONFIG.get("IS_HTTP_ENABLED")
+IS_HTTP_ENABLED = DOTENV_CONFIG.get("IS_HTTP_ENABLED").lower() == "true"
 
 # Set up logging
 logging_format = "%(asctime)s - %(levelname)s - %(message)s"
@@ -326,9 +326,6 @@ def gen_network_security_group_security_rule_list(
     return security_rules
 
 
-#                                                    #
-#    EDIT BELOW THIS LINE TO CUSTOMIZE THE SCRIPT    #
-#                                                    #
 def main():
     global CORE_CLIENT
 
@@ -358,7 +355,7 @@ def main():
     else:
         display_name = "Allow Cloudflare IPs (HTTPS Only)"
 
-    logger.info("Display Name: {}".format(display_name))
+    logger.info("NSG Display Name: {}".format(display_name))
     freeform_tags = {
         "CreatedBy": DOTENV_CONFIG.get("FREEFORM_TAGS_CREATED_BY"),
         "Purpose": DOTENV_CONFIG.get("FREEFORM_TAGS_PURPOSE"),
