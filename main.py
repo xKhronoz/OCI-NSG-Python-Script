@@ -3,34 +3,34 @@ import logging
 
 import oci
 import requests
+from dotenv import dotenv_values
 from oci.config import from_file, validate_config
 
-#                                           #
-#       YOU SHOULD ONLY EDIT THIS PART      #
-#                                           #
+#                                                                           #
+#        DO NOT MODIFY ANYTHING BELOW THIS LINE UP, USE .ENV INSTEAD        #
+#                                                                           #
 # Please check https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm
 # for help on how to generate a key-pair and calculate the key fingerprint.
 CONFIG = from_file(file_location="./config", profile_name="DEFAULT")
+
+# Load .env file
+DOTENV_CONFIG = dotenv_values(".env")
 
 # Global Variable to store core client
 CORE_CLIENT = None
 
 # Cloudflare IPs URLs
-CF_IPV4_URL = "https://www.cloudflare.com/ips-v4"
-CF_IPV6_URL = "https://www.cloudflare.com/ips-v6"
+CF_IPV4_URL = DOTENV_CONFIG.get("CF_IPV4_URL")
+CF_IPV6_URL = DOTENV_CONFIG.get("CF_IPV6_URL")
 
 # Do your service/instance support QUIC/HTTP3?
-IS_HTTP3_ENABLED = True
+IS_HTTP3_ENABLED = DOTENV_CONFIG.get("IS_HTTP3_ENABLED")
 
 # Do your service/instance support IPv6?
-IS_IPV6_ENABLED = True
+IS_IPV6_ENABLED = DOTENV_CONFIG.get("IS_IPV6_ENABLED")
 
 # Do your service/instance support plaintext HTTP (port 80)?
-IS_HTTP_ENABLED = False
-
-#                                                                           #
-#           DO NOT MODIFY ANYTHING BELOW THIS LINE UP TO 'main()'           #
-#                                                                           #
+IS_HTTP_ENABLED = DOTENV_CONFIG.get("IS_HTTP_ENABLED")
 
 # Set up logging
 logging_format = "%(asctime)s - %(levelname)s - %(message)s"
@@ -341,11 +341,11 @@ def main():
     CORE_CLIENT = oci.core.VirtualNetworkClient(CONFIG)
 
     # Create parameters for network security group creation
-    compartment_id = "ocid1.tenancy.oc1..aaaaaaaaeve7pux3ef4xq6coi2h6mj22mqoyfgqyiqlmo6m4gk4uex2aq4ia"
-    vcn_id = "ocid1.vcn.oc1.ap-singapore-1.amaaaaaa7qzl4tiau6hysvndxweaw5siyr75yblbfzfn3tzgh5nuvf7vku2q"
+    compartment_id = DOTENV_CONFIG.get("COMPARTMENT_OCID")
+    vcn_id = DOTENV_CONFIG.get("VCN_OCID")
     defined_tags = {
         "Oracle-Tags": {
-            "CreatedBy": "default/yeek3063@gmail.com",
+            "CreatedBy": DOTENV_CONFIG.get("CREATED_BY"),
             "CreatedOn": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
     }
@@ -359,7 +359,10 @@ def main():
         display_name = "Allow Cloudflare IPs (HTTPS Only)"
 
     logger.info("Display Name: {}".format(display_name))
-    freeform_tags = {"Type": "CDN Proxy IPs", "Purpose": "Allow Cloudflare IPs"}
+    freeform_tags = {
+        "CreatedBy": DOTENV_CONFIG.get("FREEFORM_TAGS_CREATED_BY"),
+        "Purpose": DOTENV_CONFIG.get("FREEFORM_TAGS_PURPOSE"),
+    }
     random_token = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     opc_retry_token = "Create-NSG-ReTry-Token-{}".format(random_token)
 
@@ -391,13 +394,13 @@ def main():
     # Build network security group security rules
     security_rules = []
 
-    # Set port ranges for HTTPS and HTTP (EDIT THIS IF YOU WANT TO CHANGE PORTS)
-    https_min_range = 443
-    https_max_range = 443
-    http_min_range = 80
-    http_max_range = 80
-    tcp_protocol = "6"  # TCP
-    udp_protocol = "17"  # UDP
+    # Set port ranges for HTTPS and HTTP
+    https_min_range = DOTENV_CONFIG.get("HTTPS_MIN_RANGE")
+    https_max_range = DOTENV_CONFIG.get("HTTPS_MAX_RANGE")
+    http_min_range = DOTENV_CONFIG.get("HTTP_MIN_RANGE")
+    http_max_range = DOTENV_CONFIG.get("HTTP_MAX_RANGE")
+    tcp_protocol = DOTENV_CONFIG.get("TCP_PROTOCOL")
+    udp_protocol = DOTENV_CONFIG.get("UDP_PROTOCOL")
 
     # If plaintext HTTP is enabled, Add HTTP security rules
     if IS_HTTP_ENABLED:
