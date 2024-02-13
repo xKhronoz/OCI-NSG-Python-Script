@@ -13,7 +13,7 @@
 Oracle Cloud Infrastructure (OCI) NSG Python Script is a script that will create a NSG & associated Security Rules in OCI.
 
 It was created to allow for easy creation of NSGs for use with Cloudflare's [IP Lists](https://www.cloudflare.com/ips/) in mind, but could be adapted to do more than just for Cloudflare's IP Lists.
-Of couse you could also use `Terraform` to perform this automations as well, but I like python 🐍 more.
+Of couse you could also use `Terraform` to perform this automations as well which could be included in the future.
 
 The script can currently create a NSG with the following rules:
 
